@@ -2,44 +2,40 @@ package uz.safargo.driver.core.theme
 
 import android.app.Activity
 import android.os.Build
+import android.view.WindowInsetsController
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
+import androidx.core.graphics.ColorUtils
 
+@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun AppTheme(
-    darkTheme: Boolean = true,
-    dynamicColor: Boolean = true, content: @Composable () -> Unit
+
+    content: @Composable () -> Unit
 ) {
 
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
 
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+            window.statusBarColor = Color.White.toArgb()
+            val isDarkIcons = ColorUtils.calculateLuminance(Color.White.toArgb()) > 0.5
+            window.insetsController?.setSystemBarsAppearance(
+                if (isDarkIcons) WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS else 0,
+                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+            )
+
         }
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
         content = content,
+
     )
 }

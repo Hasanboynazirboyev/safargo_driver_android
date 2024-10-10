@@ -7,7 +7,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class NavigatorImpl @Inject constructor() : Navigator, NavigationDispatcher {
+class CustomNavigatorImpl @Inject constructor() : CustomNavigator, NavigationDispatcher {
     override val dispatcher = MutableSharedFlow<AppNavigation>()
 
     private suspend fun navigate(screen: AppNavigation) {

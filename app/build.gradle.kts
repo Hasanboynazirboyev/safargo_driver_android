@@ -72,13 +72,9 @@ dependencies {
 
     implementation(libs.hilt.android)
 
+    implementation(libs.appcompat)
 
-    implementation(libs.voyager.navigator)
-    implementation(libs.voyager.tab.navigator)
-    implementation(libs.voyager.bottom.sheet.navigator)
-    implementation(libs.voyager.transitions)
-    implementation(libs.voyager.hilt)
-    implementation(libs.voyager.androidx)
+
 
 
 
