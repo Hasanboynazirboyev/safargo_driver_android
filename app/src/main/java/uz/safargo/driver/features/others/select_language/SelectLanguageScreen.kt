@@ -59,17 +59,17 @@ class SelectLanguageScreen : AppScreen() {
                 CustomHeightSpacer(size = 50)
 
                 SelectLanguageItem("O'zbekcha", onClick = {
-                    onEventDispatch(SelectLanguageIntent.Navigate("uz"))
+                    onEventDispatch(SelectLanguageScreenIntent.Navigate("uz"))
                 })
                     CustomHeightSpacer(size = 20)
                 SelectLanguageItem("Русский", onClick = {
-                    onEventDispatch(SelectLanguageIntent.Navigate("ru"))
+                    onEventDispatch(SelectLanguageScreenIntent.Navigate("ru"))
                 })
                     CustomHeightSpacer(size = 20)
                 SelectLanguageItem(
                     "English",
                     onClick = {
-                        onEventDispatch(SelectLanguageIntent.Navigate("en"))
+                        onEventDispatch(SelectLanguageScreenIntent.Navigate("en"))
                     },
                 )
                 CustomHeightSpacer(size = 0)

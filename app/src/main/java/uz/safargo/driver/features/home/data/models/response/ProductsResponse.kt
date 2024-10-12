@@ -7,8 +7,6 @@ data class ProductsResponse(
     val products: List<Product>? = null,
     val skip: Int,
     val total: Int,
-
-
     )
 
 

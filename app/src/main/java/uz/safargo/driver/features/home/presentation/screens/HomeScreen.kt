@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.hilt.getViewModel
 import uz.safargo.driver.core.utils.AppScreen
-import uz.safargo.driver.core.domain.FormZStatus
+import uz.safargo.driver.core.domain.FormzStatus
 import uz.safargo.driver.core.ui_components.MainProgressIndicator
 import uz.safargo.driver.features.home.presentation.viewmodel.HomeScreenUiState
 import uz.safargo.driver.features.home.presentation.viewmodel.HomeViewModel
@@ -41,22 +41,22 @@ class HomeScreen : AppScreen() {
 
 
         when (uiState.status) {
-            FormZStatus.Initial -> {
+            FormzStatus.Initial -> {
                 // if there is an argument, the initial event can be added here. if not it can be added in init function in viewModel
                 // eg:  viewModel.onEventDispatch(uz.safargo.driver.features.home.presentation.viewmodel.HomeScreenIntent.GetWeatherData)
             }
 
-            FormZStatus.Loading -> {
+            FormzStatus.Loading -> {
                 MainProgressIndicator()
             }
 
-            FormZStatus.Success -> {
+            FormzStatus.Success -> {
                 HomeSuccessContent(
                     uiState,
                 )
             }
 
-            FormZStatus.Error -> {
+            FormzStatus.Error -> {
                 //  ui in the state where an error is returned from the backend
             }
 

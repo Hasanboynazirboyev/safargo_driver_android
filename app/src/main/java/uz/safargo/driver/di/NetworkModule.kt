@@ -33,7 +33,7 @@ class NetworkModule {
             val request = chain.request()
             val response =
                 request.newBuilder()
-//                    .header("Authorization", localStorage.loginResponse?.access_token ?: "")
+                    .header("Authorization", localStorage.accessToken ?: "")
                     .header("content-type", "application/json")
                     .build()
             return@Interceptor chain.proceed(response)

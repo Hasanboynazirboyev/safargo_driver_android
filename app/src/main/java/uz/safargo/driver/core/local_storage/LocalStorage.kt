@@ -13,7 +13,7 @@ class LocalStorage @Inject constructor(
     private val pref: SharedPreferences =
         context.getSharedPreferences("LocaleStorage", Context.MODE_PRIVATE)
 
-    fun  clearData() {
+    fun clearData() {
         pref.edit().clear().apply()
     }
 
@@ -33,7 +33,13 @@ class LocalStorage @Inject constructor(
             pref.edit().putBoolean("hasProfile", value).apply()
         }
 
-
+    var accessToken: String?
+        get() {
+            return pref.getString("accessToken", null)
+        }
+        set(value) {
+            pref.edit().putString("accessToken", value).apply()
+        }
 
 
 }

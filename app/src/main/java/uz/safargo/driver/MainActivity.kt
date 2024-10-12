@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import uz.safargo.driver.core.local_storage.LocalStorage
 import uz.safargo.driver.core.theme.AppTheme
-import uz.safargo.driver.features.others.select_language.SelectLanguageScreen
+import uz.safargo.driver.features.auth.presentation.confirm_code.ConfirmCodeScreen
 import uz.safargo.driver.navigation.NavigationDispatcher
 import javax.inject.Inject
 
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         setContent {
             AppTheme {
-                Navigator(SelectLanguageScreen()) { navigation ->
+                Navigator(ConfirmCodeScreen()) { navigation ->
                     LaunchedEffect(key1 = navigation) {
                         navigationDispatcher.dispatcher.onEach {
                             it.invoke(navigation)

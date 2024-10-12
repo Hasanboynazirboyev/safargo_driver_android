@@ -5,6 +5,7 @@ import android.os.Build
 import android.view.WindowInsetsController
 import androidx.annotation.RequiresApi
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
@@ -15,7 +16,6 @@ import androidx.core.graphics.ColorUtils
 @RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun AppTheme(
-
     content: @Composable () -> Unit
 ) {
 
@@ -36,6 +36,10 @@ fun AppTheme(
 
     MaterialTheme(
         content = content,
+        colorScheme = lightColorScheme(
+            background = Color.Red,
+            primary = AppColors.primary,
+        ),
 
     )
 }

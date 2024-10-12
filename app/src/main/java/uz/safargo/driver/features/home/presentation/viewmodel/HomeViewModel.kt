@@ -6,7 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import uz.safargo.driver.core.domain.FormZStatus
+import uz.safargo.driver.core.domain.FormzStatus
 import uz.safargo.driver.core.error.Either
 import uz.safargo.driver.features.home.data.models.request.GetProductsRequest
 import uz.safargo.driver.features.home.domain.entities.ProductsEntity
@@ -35,7 +35,7 @@ class HomeViewModel @Inject constructor(
     private fun getWeatherData() {
         uiState.update {
             it.copy(
-                status = FormZStatus.Loading,
+                status = FormzStatus.Loading,
             )
         }
        viewModelScope.launch {
@@ -51,7 +51,7 @@ class HomeViewModel @Inject constructor(
                        is Either.Right -> {
                            uiState.update {
                                it.copy(
-                                   status = FormZStatus.Success,
+                                   status = FormzStatus.Success,
                                    products = result.data,
                                )
                            }
@@ -59,7 +59,7 @@ class HomeViewModel @Inject constructor(
                        is Either.Left -> {
                            uiState.update {
                                it.copy(
-                                   status = FormZStatus.Error,
+                                   status = FormzStatus.Error,
                                )
                            }
                        }
@@ -73,7 +73,7 @@ class HomeViewModel @Inject constructor(
 }
 
 data class HomeScreenUiState(
-    val status: FormZStatus = FormZStatus.Initial,
+    val status: FormzStatus = FormzStatus.Initial,
     val products: List<ProductsEntity> = emptyList(),
 )
 

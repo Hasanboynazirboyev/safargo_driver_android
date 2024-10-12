@@ -27,6 +27,7 @@ class SplashViewModel @Inject constructor(
 
 
     private fun navigateToHome() {
+
         viewModelScope.launch {
             delay(500)
             if (localStorage.hasProfile) {

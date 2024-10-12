@@ -1,6 +1,8 @@
 package uz.safargo.driver.di
+
 import dagger.Binds
 import dagger.Module
+import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import uz.safargo.driver.navigation.NavigationDispatcher
@@ -17,4 +19,10 @@ interface NavigationModule {
     @Binds
     fun provideNavigationDispatcher(impl: CustomNavigatorImpl): NavigationDispatcher
 
+}
+
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface MyNavigatorEntryPoint {
+    fun getNavigator(): CustomNavigator
 }
