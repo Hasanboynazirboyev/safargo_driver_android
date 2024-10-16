@@ -7,13 +7,13 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import uz.safargo.driver.core.text_transformations.PhoneVisualTransformation
@@ -22,7 +22,9 @@ import uz.safargo.driver.core.theme.AppTypography
 
 @Composable
 fun CustomTextField(
-    textState: MutableState<String> = remember { mutableStateOf("") },
+    textState: TextFieldValue = remember {
+        TextFieldValue()
+    },
     hintText: String = "",
     prefixText: String = "+998 ",
     isPhoneNumber: Boolean = false,
@@ -32,15 +34,16 @@ fun CustomTextField(
     val hasFocus = remember { mutableStateOf(false) }
 
     OutlinedTextField(
-        value = textState.value,
+        value = textState,
         onValueChange = { changedText ->
-            if (isPhoneNumber && changedText.length > 9) {
+            if (isPhoneNumber && changedText.text.length > 9) {
                 return@OutlinedTextField
             }
-            textState.value = changedText
-            onChanged(changedText)
+
+            onChanged(textState.text)
 
         },
+
 
         placeholder = {
             if (!hasFocus.value) {
@@ -63,11 +66,13 @@ fun CustomTextField(
         ),
         shape = RoundedCornerShape(16.dp),
         prefix = {
-            if (hasFocus.value || textState.value.isNotEmpty()) {
-                Text(
-                    text = prefixText,
-                    style = AppTypography.font16W400Black
-                )
+            if (textState.text.isNotEmpty()) {
+                if (hasFocus.value || textState.text.isNotEmpty()) {
+                    Text(
+                        text = prefixText,
+                        style = AppTypography.font16W400Black
+                    )
+                }
             }
         },
         keyboardOptions = KeyboardOptions(

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "994090002446",
+    "project_id": "durtaxi-11dff",
+    "storage_bucket": "durtaxi-11dff.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:994090002446:android:78ce2198c80b1d7f99345f",
+        "android_client_info": {
+          "package_name": "uz.safargo.client"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQEF8YqgHM_G3lwSueFqn1G5BMRgnTjJA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:994090002446:android:9b5418c4f9d8850199345f",
+        "android_client_info": {
+          "package_name": "uz.safargo.driver_android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQEF8YqgHM_G3lwSueFqn1G5BMRgnTjJA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

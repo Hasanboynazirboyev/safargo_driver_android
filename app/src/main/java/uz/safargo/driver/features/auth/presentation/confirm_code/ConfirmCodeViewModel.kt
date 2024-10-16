@@ -1,8 +1,9 @@
 package uz.safargo.driver.features.auth.presentation.confirm_code
 
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
@@ -11,46 +12,75 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 import uz.safargo.driver.core.domain.FormzStatus
 import uz.safargo.driver.core.error.Either
+import uz.safargo.driver.core.helpers.DeviceInfoHelper
+import uz.safargo.driver.core.local_storage.LocalStorage
 import uz.safargo.driver.core.models.MainRequestModel
 import uz.safargo.driver.core.use_case.MainParams
-import uz.safargo.driver.features.auth.domain.use_case.CheckPhoneNumberUseCase
 import uz.safargo.driver.features.auth.domain.use_case.GenerateOtpForSignUpUseCase
 import uz.safargo.driver.features.auth.domain.use_case.SignInUseCase
+import uz.safargo.driver.features.home.presentation.screens.HomeScreen
 import uz.safargo.driver.navigation.CustomNavigator
 
 import javax.inject.Inject
 
 
 @HiltViewModel
-class AuthViewModel @Inject constructor(
-    private val checkPhoneNumberUseCase: CheckPhoneNumberUseCase,
+class ConfirmCodeViewModel @Inject constructor(
     private val signInUseCase: SignInUseCase,
-    private val signUpUseCase: GenerateOtpForSignUpUseCase,
-    private val navigator: CustomNavigator
+    private val localStorage: LocalStorage,
+    private val navigator: CustomNavigator,
+    private val generateOtpForSignUpUseCase: GenerateOtpForSignUpUseCase,
 ) : ViewModel() {
-    val uiState = MutableStateFlow(AuthScreenUiState())
-    fun onEventDispatch(intent: AuthScreenIntent) {
+    val uiState = MutableStateFlow(ConfirmCodeUiState())
+
+    @RequiresApi(Build.VERSION_CODES.P)
+    fun onEventDispatch(intent: ConfirmCodeScreenIntent) {
         when (intent) {
-            is AuthScreenIntent.CheckPhoneNumber -> checkPhoneNumber()
+            is ConfirmCodeScreenIntent.ConfirmCode -> confirmCode(
+                intent.context,
+                intent.code,
+                intent.signature,
+                intent.phoneNumber,
+            )
         }
     }
 
-    private fun checkPhoneNumber() {
+
+    private fun confirmCode(
+        context: Context,
+        code: Int = 0,
+        signature: String = "",
+        phoneNumber: String = ""
+    ) {
         uiState.update {
             it.copy(
                 status = FormzStatus.Loading,
             )
         }
+        var fcmToken = ""
+
+        val deviceId = DeviceInfoHelper.getDeviceId(context)
+        viewModelScope.launch {
+            fcmToken = DeviceInfoHelper.getFcmToken()
+
+        }
 
 
-        checkPhoneNumberUseCase.call(
+        signInUseCase.call(
             MainParams(
                 request = MainRequestModel(
                     body = mapOf(
-                        "phone" to uiState.value.phoneNumber.value
+                        "phone" to phoneNumber,
+                        "code" to code,
+                        "signature" to signature,
+                        "deviceOS" to "android",
+                        "deviceId" to deviceId,
+                        "fcmToken" to fcmToken,
+                        "language" to localStorage.language!!.uppercase()
                     )
                 )
             )
@@ -58,11 +88,7 @@ class AuthViewModel @Inject constructor(
             .onEach { result ->
                 when (result) {
                     is Either.Right -> {
-                        if (result.data.success) {
-                            generateOtpForSignIn()
-                        } else {
-                            generateOtpForSignUp()
-                        }
+                        navigator.navigateTo(HomeScreen())
                     }
 
                     is Either.Left -> {
@@ -74,66 +100,20 @@ class AuthViewModel @Inject constructor(
     }
 
 
-    private fun generateOtpForSignIn() {
-        signInUseCase.call(
-            MainParams(
-                request = MainRequestModel(
-                    body = mapOf(
-                        "phone" to uiState.value.phoneNumber.value,
-                        "code" to 0,
-                        "signature" to "signature"
-                    )
-                )
-            )
-        ).onEach { result ->
-            when (result) {
-                is Either.Right -> {
-
-                }
-
-                is Either.Left -> {
-
-                }
-
-            }
-        }.launchIn(viewModelScope)
-    }
-
-    private fun generateOtpForSignUp() {
-        signUpUseCase.call(
-            MainParams(
-                request = MainRequestModel(
-                    body = mapOf(
-                        "phone" to uiState.value.phoneNumber.value,
-                        "code" to 0,
-                        "type" to "DRIVER",
-                        "signature" to "signature"
-                    )
-                )
-            )
-        ).onEach { result ->
-            when (result) {
-                is Either.Right -> {
-                    navigator.navigateTo(ConfirmCodeScreen())
-                }
-
-                is Either.Left -> {
-
-                }
-
-            }
-        }.launchIn(viewModelScope)
-    }
-
 }
 
-data class AuthScreenUiState(
+data class ConfirmCodeUiState(
     val status: FormzStatus = FormzStatus.Initial,
-    val phoneNumber: MutableState<String> = mutableStateOf(""),
+
 
     )
 
-sealed class AuthScreenIntent {
-    data class CheckPhoneNumber(val signature: String) : AuthScreenIntent()
+sealed class ConfirmCodeScreenIntent {
+    data class ConfirmCode(
+        val context: Context,
+        val code: Int,
+        val phoneNumber: String,
+        val signature: String
+    ) : ConfirmCodeScreenIntent()
 
 }

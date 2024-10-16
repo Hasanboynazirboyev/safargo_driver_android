@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kapt)
+    alias(libs.plugins.googleServices)
 }
 
 android {
@@ -10,7 +11,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "uz.safargo.driver"
+        applicationId = "uz.safargo.driver_android"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -109,8 +110,29 @@ dependencies {
      */
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
-//    implementation(libs.hilt.lifecycle.viewmodel)
+
     implementation(libs.androidx.lifecycle.viewmodel)
     kapt(libs.hilt.android.compiler)
     kapt(libs.hilt.compiler)
+
+    /**
+     * Chucker
+     */
+    debugImplementation(libs.chucker)
+    releaseImplementation(libs.chuckerNoOp)
+
+
+    /**
+     * Firebase Messaging
+     */
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
+
+    /**
+     * Sms Retriever
+     */
+    implementation(libs.play.services.auth)
+
+
+
 }

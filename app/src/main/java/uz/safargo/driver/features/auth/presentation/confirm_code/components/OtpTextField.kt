@@ -11,6 +11,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -30,31 +31,39 @@ import uz.safargo.driver.core.theme.AppColors
 @Composable
 fun OtpTextField(
     otpCode: MutableState<String>,
-    onOtpChange: (String) -> Unit
+    onOtpChange: (String) -> Unit,
+    otpFieldCount: Int = 5,
+    isError: Boolean,
 ) {
+
     val focusRequesters = List(5) { FocusRequester() }
     val focusManager = LocalFocusManager.current
+    val otpMinusOne = otpFieldCount - 1
+    LaunchedEffect(Unit) {
+        focusRequesters.first().requestFocus()
+    }
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
 
-        for (i in 0 until 5) {
+        for (i in 0 until otpFieldCount) {
 
 
             OutlinedTextField(
                 value = otpCode.value.getOrNull(i)?.toString() ?: "",
+
                 onValueChange = { value ->
-                    if (otpCode.value.length < 5) {
+                    if (otpCode.value.length < otpFieldCount) {
                         otpCode.value += value
 
 
-                        if (otpCode.value.length == 5) {
+                        if (otpCode.value.length == otpFieldCount) {
                             onOtpChange(otpCode.value)
                             focusManager.clearFocus()
                         } else {
 
-                            if (i != 4) {
+                            if (i != otpMinusOne) {
                                 focusRequesters[i + 1].requestFocus()
                             }
                             onOtpChange(otpCode.value)
@@ -67,11 +76,11 @@ fun OtpTextField(
                     .focusRequester(focusRequesters[i])
                     .size(60.dp)
                     .border(
-                        if (i < otpCode.value.length) BorderStroke(
+                        if (i < otpCode.value.length && !isError) BorderStroke(
                             2.dp,
                             AppColors.primary,
 
-                        ) else BorderStroke(0.dp, Color.Transparent),
+                            ) else BorderStroke(0.dp, Color.Transparent),
                         shape = RoundedCornerShape(12.dp)
                     )
                     .onKeyEvent { keyEvent ->
@@ -82,11 +91,11 @@ fun OtpTextField(
                             val otpCodeIndexedValue = otpCodeValue
                                 .getOrNull(i)
                                 ?.toString() ?: ""
-                            if (i != 0 && i != 4) {
+                            if (i != 0 && i != otpMinusOne) {
                                 otpCode.value = otpCodeValue.substring(0, otpCodeValueLength - 1)
                                 focusRequesters[i - 1].requestFocus()
                             }
-                            if (i == 4) {
+                            if (i == otpMinusOne) {
                                 otpCode.value = otpCodeValue.substring(0, otpCodeValueLength - 1)
                                 if (otpCodeIndexedValue.isEmpty()) {
                                     focusRequesters[i - 1].requestFocus()
@@ -108,14 +117,30 @@ fun OtpTextField(
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = AppColors.primary,
-                    unfocusedBorderColor = if (i < otpCode.value.length) AppColors.primary else AppColors.grey2,
+                    focusedBorderColor = getBorderColor(true, isError),
+                    unfocusedBorderColor = getBorderColor(i < otpCode.value.length, isError),
                 ),
 
                 shape = RoundedCornerShape(12.dp)
             )
         }
     }
+}
+
+private fun getBorderColor(
+    isPrimaryBorder: Boolean,
+    isError: Boolean
+): Color {
+
+    return if (isError) {
+        Color.Red
+    } else if (isPrimaryBorder) {
+        AppColors.primary
+    } else {
+        AppColors.grey2
+    }
+
+
 }
 
 

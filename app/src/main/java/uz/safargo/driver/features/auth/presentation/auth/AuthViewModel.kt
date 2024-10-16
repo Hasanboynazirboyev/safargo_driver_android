@@ -1,8 +1,9 @@
 package uz.safargo.driver.features.auth.presentation.auth
 
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import android.content.Context
+import android.util.Log
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.update
 
 import uz.safargo.driver.core.domain.FormzStatus
 import uz.safargo.driver.core.error.Either
+import uz.safargo.driver.core.helpers.sms_retriever.AppSignatureHelper
 import uz.safargo.driver.core.models.MainRequestModel
 import uz.safargo.driver.core.use_case.MainParams
 import uz.safargo.driver.features.auth.domain.use_case.CheckPhoneNumberUseCase
@@ -35,11 +37,12 @@ class AuthViewModel @Inject constructor(
     val uiState = MutableStateFlow(AuthScreenUiState())
     fun onEventDispatch(intent: AuthScreenIntent) {
         when (intent) {
-            is AuthScreenIntent.CheckPhoneNumber -> checkPhoneNumber(intent.signature)
+            is AuthScreenIntent.CheckPhoneNumber -> checkPhoneNumber(intent.context)
         }
     }
 
-    private fun checkPhoneNumber(signature: String) {
+    private fun checkPhoneNumber(context: Context) {
+        val signature = AppSignatureHelper(context).getAppSignature()
         uiState.update {
             it.copy(
                 status = FormzStatus.Loading,
@@ -52,7 +55,7 @@ class AuthViewModel @Inject constructor(
             MainParams(
                 request = MainRequestModel(
                     body = mapOf(
-                        "phone" to uiState.value.phoneNumber.value
+                        "phone" to uiState.value.phoneNumber()
                     )
                 )
             )
@@ -60,6 +63,7 @@ class AuthViewModel @Inject constructor(
             .onEach { result ->
                 when (result) {
                     is Either.Right -> {
+
                         if (result.data.success) {
                             generateOtpForSignIn()
                         } else {
@@ -68,6 +72,7 @@ class AuthViewModel @Inject constructor(
                     }
 
                     is Either.Left -> {
+                        Log.i("TAG", "checkPhoneNumber: ${result.errorMessage.message}")
 
                     }
 
@@ -76,44 +81,46 @@ class AuthViewModel @Inject constructor(
     }
 
 
-    private fun generateOtpForSignIn() {
+    private suspend fun generateOtpForSignIn() {
         signInUseCase.call(
             MainParams(
                 request = MainRequestModel(
                     body = mapOf(
-                        "phone" to uiState.value.phoneNumber.value,
+                        "phone" to uiState.value.phoneNumber(),
                         "code" to 0,
                         "signature" to uiState.value.signature
                     )
                 )
             )
-        ).onEach { result ->
+        ).collect { result ->
             when (result) {
                 is Either.Right -> {
                     navigate()
+                    Log.i("TAG", "generateOtpForSignIn: ${result.data}")
                 }
 
                 is Either.Left -> {
+                    Log.i("TAG", "generateOtpForSignIn: ${result.errorMessage.message}")
 
                 }
 
             }
-        }.launchIn(viewModelScope)
+        }
     }
 
-    private fun generateOtpForSignUp() {
+    private suspend fun generateOtpForSignUp() {
         signUpUseCase.call(
             MainParams(
                 request = MainRequestModel(
                     body = mapOf(
-                        "phone" to uiState.value.phoneNumber.value,
+                        "phone" to uiState.value.phoneNumber(),
                         "code" to 0,
                         "type" to "DRIVER",
                         "signature" to uiState.value.signature
                     )
                 )
             )
-        ).onEach { result ->
+        ).collect { result ->
             when (result) {
                 is Either.Right -> {
                     navigate()
@@ -124,14 +131,14 @@ class AuthViewModel @Inject constructor(
                 }
 
             }
-        }.launchIn(viewModelScope)
+        }
     }
 
-     suspend fun navigate() {
+    private suspend fun navigate() {
         navigator.navigateTo(
             ConfirmCodeScreen(
                 signature = uiState.value.signature,
-                phoneNumber = uiState.value.phoneNumber.value,
+                phoneNumber = uiState.value.phoneNumber(),
             )
         )
     }
@@ -140,12 +147,17 @@ class AuthViewModel @Inject constructor(
 
 data class AuthScreenUiState(
     val status: FormzStatus = FormzStatus.Initial,
-    val phoneNumber: MutableState<String> = mutableStateOf(""),
+    val phoneNumber: TextFieldValue = TextFieldValue(),
     val signature: String = "",
 
-    )
+
+    ) {
+    fun phoneNumber(): String {
+        return "+998${phoneNumber.text}"
+    }
+}
 
 sealed class AuthScreenIntent {
-    data class CheckPhoneNumber(val signature: String) : AuthScreenIntent()
+    data class CheckPhoneNumber(val context: Context) : AuthScreenIntent()
 
 }

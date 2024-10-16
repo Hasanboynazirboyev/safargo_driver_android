@@ -16,29 +16,43 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.hilt.getViewModel
+import uz.safargo.driver.core.domain.isError
 import uz.safargo.driver.core.domain.isLoading
-import uz.safargo.driver.core.theme.AppColors
+import uz.safargo.driver.core.helpers.sms_retriever.RegisterSmsReceiver
 import uz.safargo.driver.core.theme.AppTypography
 import uz.safargo.driver.core.ui_components.CustomHeightSpacer
 import uz.safargo.driver.core.ui_components.CustomScaffold
 import uz.safargo.driver.core.utils.AppScreen
+import uz.safargo.driver.features.auth.presentation.confirm_code.components.ConfirmCodeTimer
 import uz.safargo.driver.features.auth.presentation.confirm_code.components.OtpTextField
 
 class ConfirmCodeScreen(
     val phoneNumber: String = "",
     val signature: String = "",
 ) : AppScreen() {
-    @RequiresApi(Build.VERSION_CODES.P)
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @Composable
     override fun Content() {
-        val viewModel = getViewModel<AuthViewModel>()
+        val viewModel = getViewModel<ConfirmCodeViewModel>()
         val uiState = viewModel.uiState.collectAsState().value
         val otpCode = remember { mutableStateOf("") }
+        val localContext = LocalContext.current.applicationContext
 
-
+        RegisterSmsReceiver { code ->
+            otpCode.value = code
+            viewModel.onEventDispatch(
+                ConfirmCodeScreenIntent.ConfirmCode(
+                    localContext,
+                    otpCode.value.toInt(),
+                    phoneNumber,
+                    signature,
+                )
+            )
+        }
 
 
 
@@ -65,17 +79,25 @@ class ConfirmCodeScreen(
                 )
                 CustomHeightSpacer(size = 24)
                 OtpTextField(
-                    onOtpChange = { _ -> },
-                    otpCode = otpCode
+                    onOtpChange = { _ ->
+                        if (otpCode.value.length == 4) {
+                            viewModel.onEventDispatch(
+                                ConfirmCodeScreenIntent.ConfirmCode(
+                                    localContext,
+                                    otpCode.value.toInt(),
+                                    phoneNumber,
+                                    signature,
+                                )
+                            )
+                        }
+                    },
+                    otpCode = otpCode,
+                    otpFieldCount = 4,
+                    isError = uiState.status.isError()
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = "Agar kod kelmasa, 60 soniyada yangisini olishingiz mumkin",
-                    style = AppTypography.font16W400Black.copy(
-                        color = AppColors.grey2,
-                    ),
-                    modifier = Modifier
-
+                ConfirmCodeTimer(
+                    onSendAgainClick = {}
                 )
 
 

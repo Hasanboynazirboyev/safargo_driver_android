@@ -1,7 +1,13 @@
 package uz.safargo.driver.di
+
+import android.content.Context
+import com.chuckerteam.chucker.api.ChuckerCollector
+import com.chuckerteam.chucker.api.ChuckerInterceptor
+import com.chuckerteam.chucker.api.RetentionManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -27,8 +33,9 @@ class NetworkModule {
     @[Provides Singleton]
     fun providesOkHttpClient(
         httpLoggingInterceptor: HttpLoggingInterceptor,
-        localStorage: LocalStorage
-    ): OkHttpClient = OkHttpClient.Builder().addInterceptor(httpLoggingInterceptor)
+        localStorage: LocalStorage,
+        chuckerInterceptor: ChuckerInterceptor,
+    ): OkHttpClient = OkHttpClient.Builder().addInterceptor(httpLoggingInterceptor).addInterceptor(chuckerInterceptor)
         .addInterceptor(Interceptor { chain ->
             val request = chain.request()
             val response =
@@ -50,6 +57,32 @@ class NetworkModule {
             GsonConverterFactory.create()
         ).build()
     }
+
+
+    @Provides
+    @Singleton
+    fun provideChuckerInterceptor(
+        @ApplicationContext context: Context,
+        chuckerCollector: ChuckerCollector
+    ): ChuckerInterceptor {
+        return ChuckerInterceptor.Builder(context)
+            .collector(chuckerCollector)
+            .maxContentLength(250_000L)
+
+            .build()
+
+    }
+
+    @Provides
+    @Singleton
+    fun provideChuckerCollector(@ApplicationContext context: Context): ChuckerCollector {
+        return ChuckerCollector(
+            context = context,
+            showNotification = true,
+            retentionPeriod = RetentionManager.Period.ONE_HOUR
+        )
+    }
+
     @[Provides Singleton]
     fun provideAuthApi(retrofit: Retrofit): AuthApi {
         return retrofit.create(AuthApi::class.java)

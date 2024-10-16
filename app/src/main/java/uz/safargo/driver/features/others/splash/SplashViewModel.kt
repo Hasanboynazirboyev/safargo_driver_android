@@ -30,7 +30,7 @@ class SplashViewModel @Inject constructor(
 
         viewModelScope.launch {
             delay(500)
-            if (localStorage.hasProfile) {
+            if (localStorage.user != null) {
                 navigator.replaceTo(HomeScreen())
             } else {
                 navigator.replaceTo(SelectLanguageScreen())

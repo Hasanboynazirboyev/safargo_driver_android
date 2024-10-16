@@ -9,4 +9,5 @@ enum class FormzStatus {
 
 
 fun FormzStatus.isLoading() = this == FormzStatus.Loading
+fun FormzStatus.isError() = this == FormzStatus.Error
 

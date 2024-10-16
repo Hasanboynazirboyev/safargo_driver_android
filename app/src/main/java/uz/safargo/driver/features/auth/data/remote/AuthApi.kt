@@ -19,50 +19,51 @@ import uz.safargo.driver.features.auth.data.models.UserResponse
 
 
 interface AuthApi {
-    @POST("/auth/check-phone")
+    @POST("/api/auth/check-phone")
     suspend fun checkPhone(
-        @Body body: Map<String, Any>
+        @Body body: Map<String, @JvmSuppressWildcards Any>
+
     ): Response<CheckPhoneNumberResponse>
 
-    @POST("/auth/generate-otp-for-sing-up")
+    @POST("/api/auth/generate-otp-for-sing-up")
     suspend fun generateOtpForSignUp(
-        @Body body: Map<String, Any>
+        @Body body: Map<String, @JvmSuppressWildcards Any>
     ): Response<GenerateOtpForSignUpResponse>
 
     @Multipart
-    @POST("/files/upload")
+    @POST("/api/files/upload")
     fun uploadFile(
         @Part files: MultipartBody.Part,
         @Part("height") height: Int,
         @Part("width") width: Int
     ): Response<UploadFileResponse>
 
-    @POST("/auth/sign-in")
+    @POST("/api/auth/sign-in-driver")
     suspend fun signIn(
-        @Body body: Map<String, Any>
+        @Body body: Map<String, @JvmSuppressWildcards Any>
     ): Response<UserResponse>
 
-    @POST("/auth/sign-up")
+    @POST("/api/auth/sign-up")
     suspend fun signUp(
-        @Body body: Map<String, Any>
+        @Body body: Map<String, @JvmSuppressWildcards Any>
     ): Response<UserResponse>
 
-    @GET("/driver/regions")
+    @GET("/api/driver/regions")
     suspend fun getRegions(
         @QueryMap query: Map<String, Any>
     ): Response<RegionsListResponse>
 
-    @GET("/driver/auto-brands")
+    @GET("/api/driver/auto-brands")
     suspend fun getBrands(
         @QueryMap query: Map<String, Any>
     ): Response<AutoBrandsListResponse>
 
-    @GET("/driver/auto-models")
+    @GET("/api/driver/auto-models")
     suspend fun getAutoModels(
         @QueryMap query: Map<String, Any>
     ): Response<AutoModelsListResponse>
 
-    @GET("/driver/facilities")
+    @GET("/api/driver/facilities")
     suspend fun getFacilities(
         @QueryMap query: Map<String, Any>
     ): Response<FacilitiesListResponse>

@@ -15,9 +15,17 @@ okhttp = "4.11.0"
 converter-gson = "2.9.0"
 voyager = "1.0.0-rc07"  # please don't change
 hilt = "2.48" # please don't change
-logging-interceptor = "4.9.3"
+logging-interceptor = "4.11.0"
 lifecycle = "2.8.6"
-appcompat = "1.6.1"
+appcompat = "1.7.0"
+chucker = "4.0.0"
+firebase-bom = "33.4.0"
+auth = "21.2.0"
+
+
+
+
+
 
 
 [libraries]
@@ -53,6 +61,19 @@ hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version = "1.
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "logging-interceptor" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+chucker = { group = "com.github.chuckerteam.chucker", name = "library", version.ref = "chucker" }
+chuckerNoOp = { group = "com.github.chuckerteam.chucker", name = "library-no-op", version.ref = "chucker" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging-ktx" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "auth" }
+
+
+
+
+
+
+
+
 
 
 
@@ -61,4 +82,6 @@ androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+googleServices = { id = "com.google.gms.google-services", version = "4.4.2" }
+
 

@@ -10,9 +10,9 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import uz.safargo.driver.core.error.Either
+import uz.safargo.driver.core.helpers.AppHelper
 import uz.safargo.driver.core.models.MainRequestModel
 import uz.safargo.driver.core.models.Message
-import uz.safargo.driver.core.utils.AppFunctions
 import uz.safargo.driver.features.auth.data.models.toEntity
 import uz.safargo.driver.features.auth.data.remote.AuthApi
 import uz.safargo.driver.features.auth.domain.entities.AutoBrandEntity
@@ -94,7 +94,7 @@ class AuthRepositoryImpl @Inject constructor(
     override fun uploadFile(file: File): Flow<Either<UploadFileEntity>> {
         return flow {
             val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
-            val dimensions = AppFunctions.getImageDimensions(file)
+            val dimensions = AppHelper.getImageDimensions(file)
 
             val body = MultipartBody.Part.createFormData("files", file.name, requestFile)
             val response =

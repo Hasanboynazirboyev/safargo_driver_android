@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,7 +20,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.hilt.getViewModel
-import kotlinx.coroutines.launch
 import uz.safargo.driver.R
 import uz.safargo.driver.core.domain.isLoading
 import uz.safargo.driver.core.theme.AppTypography
@@ -37,7 +35,6 @@ class AuthScreen : AppScreen() {
     override fun Content() {
         val viewModel = getViewModel<AuthViewModel>()
         val uiState = viewModel.uiState.collectAsState().value
-        val coroutineScope = rememberCoroutineScope()
         val localContext = LocalContext.current
 
 
@@ -46,7 +43,7 @@ class AuthScreen : AppScreen() {
             appBarTitle = "Kirish",
             paddingValues = PaddingValues(20.dp),
             isLoading = uiState.status.isLoading(),
-        ) { navigator ->
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -77,14 +74,10 @@ class AuthScreen : AppScreen() {
                 )
                 CustomHeightSpacer(size = 20)
                 CustomButton(title = "Kodni olish", onClick = {
-                    coroutineScope.launch {
-                        viewModel.navigate()
-                    }
-                    /// to do
 
-//                    val signature =
-//                        AppFunctions.getAppSignature(localContext.applicationContext) ?: "undefined"
-//                    viewModel.onEventDispatch(AuthScreenIntent.CheckPhoneNumber(signature))
+
+
+                    viewModel.onEventDispatch(AuthScreenIntent.CheckPhoneNumber(localContext))
 
                 })
             }
